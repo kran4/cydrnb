@@ -6,7 +6,24 @@
 <div id="app">
   <div ng-controller="MainCtrl">
     <p>{{ message }}</p>
-    <form ng-submit="updateMessage(newMessage)">
-    </form>
+    <table style="border: 1px solid black;">
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Required</th>
+        <th>Grants</th>
+        <th>Target</th>
+      </tr>
+      <tr ng-repeat="i in data">
+        <td>{{i.Title}}</td>
+        <td>{{i.Description}}</td>
+        <td>{{i.type}}</td>
+        <td>{{i.require}}</td>
+        <td>{{i.grant}}</td>
+        <td>{{i.target}}</td>
+      </tr>
+    </table>
+    <button type="button" ng-click="update()">Press Me If Page Never Updates</button>
   </div>
 </div>
