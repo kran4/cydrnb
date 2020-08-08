@@ -79,7 +79,7 @@ angular.module('app').controller('MainCtrl', function ($scope){
         data[i].rarity = data[i].Data.rarity;
         data[i].cost = data[i].Data.cost;
         data[i].damage = data[i].Data.damage;
-        data[i].effect = data[i].Data.effects ? data[i].Data.effects.join(", ");
+        data[i].effect = data[i].Data.effects ? data[i].Data.effects.join(", ") : '';
     }
   }
 
