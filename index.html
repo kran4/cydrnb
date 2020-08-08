@@ -10,25 +10,39 @@
   th, td {
     padding: 5px;
   }
+  .searchBox {
+    box-sizing: border-box;
+    width: 100%;
+  }
 </style>
 <div id="app">
   <div ng-controller="MainCtrl">
     <p ng-show="!loadComplete">{{ message }}</p>
     <div ng-show="loadComplete">
+      <input type="checkbox" id="showHelpCB" ng-model="showHelp">
+      <label for="showHelpCB">Show Help</label>
       <input type="checkbox" id="showSearchCB" ng-model="showSearch">
       <label for="showSearchCB">Show Search</label>
-      <br>
-      <span ng-show="showSearch">All searches are partial matches and case-insensitive. To do an exact match, instead, start with an equals sign.</span>
+      <div ng-show="showHelp">
+        <span>To sort on a column, click a header. To reverse sort, click it again.</span>
+        <br>
+        <span ng-show="showSearch">All searches are partial matches and case-insensitive. To do an exact match, instead, start with an equals sign.</span>
+      </div>
       <table>
         <tr ng-show="showSearch">
           <td ng-repeat="h in headers track by $index">
-            <input type="text" ng-model="search[$index]">
+            <input ng-if="!h.dropdown" class="searchBox" type="text" ng-model="search[$index]">
+            <select ng-if="h.dropdown" ng-model="search[$index]">
+              <option ng-repeat="d in h.dropdown" value="{{d}}">
+                {{d}}
+              </option>
+            </select>
           </td>
         </tr>
         <tr>
           <th ng-repeat="h in headers" ng-click="sort(h.col)">{{h.display}}</th>
         </tr>
-        <tr ng-repeat="d in data | orderBy: sortBy">
+        <tr ng-repeat="d in data | filter: filterBy | orderBy: sortBy">
           <td ng-repeat="h in headers">{{d[h.col]}}</td>
         </tr>
       </table>

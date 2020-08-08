@@ -10,14 +10,30 @@ angular.module('app').controller('MainCtrl', function ($scope){
 
   s.headers = [
     {display: "Title", col: "Title"},
-    {display: "Type", col: "type"},
-    {display: "Rarity", col: "rarity"},
+    {display: "Type", col: "type", dropdown:
+      [{val: '', display: '[All]'},
+      {val: '=Attack', display: 'Attack'},
+      {val: '=Defense', display: 'Defense'},
+      {val: '=Utility', display: 'Utility'},
+      {val: '=Special', display: 'Special'}]},
+    {display: "Rarity", col: "rarity", dropdown:
+      [{val: '', display: '[All]'},
+      {val: '=Common', display: 'Common'},
+      {val: '=Uncommon', display: 'Uncommon'},
+      {val: '=Rare', display: 'Rare'},
+      {val: '=Epic', display: 'Epic'}]},
     {display: "Description", col: "Description"},
     {display: "Requires", col: "require"},
     {display: "Grants", col: "grant"},
-    {display: "Targets", col: "target"}
-
+    {display: "Energy Cost", col: "cost"},
+    {display: "Attack", col: "damage"},
+    {display: "Defense", col: "defense"},
+    {display: "Hits", col: "hits"},
+    {display: "Targets", col: "target"},
+    {display: "Effects", col: "effect"}
   ];
+
+  s.search = [];
 
   //define a function to proxy out HTTP requests
   function doCORSRequest(options, fcn) {
@@ -57,6 +73,9 @@ angular.module('app').controller('MainCtrl', function ($scope){
         data[i].grant = concatenateConcepts(data[i].Data.concept);
         data[i].target = data[i].Data.targets ? data[i].Data.targets.join(', ') : '';
         data[i].rarity = data[i].Data.rarity;
+        data[i].cost = data[i].Data.cost;
+        data[i].damage = data[i].Data.damage;
+        data[i].effect = data[i].Data.effe
     }
   }
 
@@ -85,7 +104,27 @@ angular.module('app').controller('MainCtrl', function ($scope){
   }
 
   s.filterBy = function(item) {
-    
+    for(var i in s.search) {
+      if(!s.search[i])
+        continue;
+      var exact = false;
+      var search = s.search[i];
+      if(search[0] == '=') {
+        search = search.substr(1);
+        exact = true;
+      }
+      var col = s.headers[i].col;
+      if(exact) {
+        if(item[col] != search)
+          return false;
+      } else { //partial match
+        search = search.toLowerCase();
+        var val = item[col].toLowerCase();
+        if(val.indexOf(search) < 0)
+          return false;
+      }
+    }
+    return true;
   };
 });
 
