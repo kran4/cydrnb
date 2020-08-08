@@ -8,6 +8,7 @@ angular.module('app').controller('MainCtrl', function ($scope){
   var s = $scope;
   var cors_api_url = 'https://cors-anywhere.herokuapp.com/';
 
+  //define the data to be displayed and match its internal structure
   s.headers = [
     {display: "Title", col: "Title"},
     {display: "Type", col: "type", dropdown:
@@ -50,8 +51,10 @@ angular.module('app').controller('MainCtrl', function ($scope){
   s.data = [];
   s.loadComplete = false;
 
+  //unnecessary??
   if(!(s.message))
     s.message = "Loading."
+
   //acquire data from ETO
   doCORSRequest({
       method:  'GET',
@@ -66,6 +69,7 @@ angular.module('app').controller('MainCtrl', function ($scope){
       console.log(s.data);
   });
 
+  //collapse data for easier display
   function processData(data) {
       for(var i in data) {
         data[i].type = data[i].Data.type;
@@ -75,10 +79,11 @@ angular.module('app').controller('MainCtrl', function ($scope){
         data[i].rarity = data[i].Data.rarity;
         data[i].cost = data[i].Data.cost;
         data[i].damage = data[i].Data.damage;
-        data[i].effect = data[i].Data.effe
+        data[i].effect = data[i].Data.effects ? data[i].Data.effects.join(", ");
     }
   }
 
+  //include count-2 concepts twice
   function concatenateConcepts(arr) {
     var ret = '';
     for(var j in arr) {
@@ -91,11 +96,13 @@ angular.module('app').controller('MainCtrl', function ($scope){
     return ret;
   }
 
+  //mystery function that does nothing but is required
   s.update = function() {
     console.log(s.data.length);
   };
 
   s.sortBy = s.headers[0].col; //default to first column
+  //toggle ASC and DESC sorting
   s.sort = function(col) {
     if(col != s.sortBy)
       s.sortBy = col;
@@ -103,6 +110,7 @@ angular.module('app').controller('MainCtrl', function ($scope){
       s.sortBy = '-' + s.sortBy;
   }
 
+  //parse search terms and filter on the given item
   s.filterBy = function(item) {
     for(var i in s.search) {
       if(!s.search[i])

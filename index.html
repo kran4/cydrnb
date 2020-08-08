@@ -33,8 +33,8 @@
           <td ng-repeat="h in headers track by $index">
             <input ng-if="!h.dropdown" class="searchBox" type="text" ng-model="search[$index]">
             <select ng-if="h.dropdown" ng-model="search[$index]">
-              <option ng-repeat="d in h.dropdown" value="{{d}}">
-                {{d}}
+              <option ng-repeat="d in h.dropdown" value="{{d.val}}">
+                {{d.display}}
               </option>
             </select>
           </td>
