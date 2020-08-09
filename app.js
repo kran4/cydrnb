@@ -64,13 +64,13 @@ angular.module('app').controller('MainCtrl', function ($scope){
       s.data = result.responseText;
       s.data = JSON.parse(s.data);
       s.loadComplete = true;
-      processData(s.data);
+      parseData(s.data);
       console.log("Success");
       console.log(s.data);
   });
 
   //collapse data for easier display
-  function processData(data) {
+  function parseData(data) {
       for(var i in data) {
         data[i].type = data[i].Data.type;
         data[i].require = concatenateConcepts(data[i].Data.conceptrequirement);
@@ -84,6 +84,12 @@ angular.module('app').controller('MainCtrl', function ($scope){
         data[i].effect = parseEffects(data[i].Data.effects);
     }
   }
+
+  //known attributes in Data.effects
+  var effectAttributes = [
+    "trigger", "name", "deck", "card", "intensity",
+    "type", "hitduration", "roundduration"
+  ]
 
   //format: each effect in square brackets, comma-dilineated
   // [$trigger: ][$name][ $deck][ $card][ $intensity][ $type][ for ][ $hitduration hit(s)][ / ][ $roundduration rd(s)]
@@ -118,6 +124,15 @@ angular.module('app').controller('MainCtrl', function ($scope){
           ret += ' / ';
         if(rds)
           ret += rds + (rds == 1 ? ' rd' : ' rds');
+      }
+
+      //check for any novel attributes
+      var keys = Object.getOwnPropertyNames(arr[i]);
+      for(var j in keys) {
+        if(effectAttributes.indexOf(keys[j]) < 0) {
+          ret += " ???";
+          break;
+        }
       }
       ret += ']'
     }
@@ -157,19 +172,30 @@ angular.module('app').controller('MainCtrl', function ($scope){
       if(!s.search[i])
         continue;
       var exact = false;
+      var not = false;
       var search = s.search[i];
       if(search[0] == '=') {
         search = search.substr(1);
         exact = true;
+      } else if(search[0] == '!') {
+        search = search.substr(1);
+        not = true;
       }
       var col = s.headers[i].col;
-      if(exact) {
-        if(item[col] != search)
+      var val = item[col] || '';
+      if(exact) { //exact
+        if(val != search)
           return false;
-      } else { //partial match
+      } else if(not && search == '') { //not empty
+        if(val == '')
+          return false;
+      } else { //contains
         search = search.toLowerCase();
-        var val = item[col].toLowerCase();
-        if(val.indexOf(search) < 0)
+        val = val.toLowerCase();
+        var found = val.indexOf(search) >= 0;
+        if(not) //does not contain
+          found = !found;
+        if(!found)
           return false;
       }
     }
