@@ -79,8 +79,49 @@ angular.module('app').controller('MainCtrl', function ($scope){
         data[i].rarity = data[i].Data.rarity;
         data[i].cost = data[i].Data.cost;
         data[i].damage = data[i].Data.damage;
-        data[i].effect = data[i].Data.effects ? data[i].Data.effects.join(", ") : '';
+        data[i].defense = data[i].Data.defense;
+        data[i].hits = data[i].Data.hits;
+        data[i].effect = parseEffects(data[i].Data.effects);
     }
+  }
+
+  //format: each effect in square brackets, comma-dilineated
+  // [$trigger: ][$name][ $deck][ $card][ $intensity][ $type][ for ][ $hitduration hit(s)][ / ][ $roundduration rd(s)]
+  // [ / ] shown only if hitduration && roundduration both present
+  function parseEffects(arr) {
+    if(!arr || !arr.length)
+      return '';
+    var ret = '';
+    for(var i in arr) {
+      if(ret.length > 0)
+        ret += ', '
+      ret += '[';
+      if(arr[i].trigger)
+        ret += arr[i].trigger + ': '
+      if(arr[i].name)
+        ret += arr[i].name;
+      if(arr[i].deck)
+        ret += ' ' + arr[i].deck;
+      if(arr[i].card)
+        ret += ' ' + arr[i].card;
+      if(arr[i].intensity)
+        ret += ' ' + arr[i].intensity;
+      if(arr[i].type)
+        ret += ' ' + arr[i].type;
+      var hits = arr[i].hitduration;
+      var rds = arr[i].roundduration;
+      if(hits || rds) {
+        ret += ' for ';
+        if(hits)
+          ret += hits + (hits == 1 ? ' hit' : ' hits');
+        if(hits && rds)
+          ret += ' / ';
+        if(rds)
+          ret += rds + (rds == 1 ? ' rd' : ' rds');
+      }
+      ret += ']'
+    }
+    return ret;
   }
 
   //include count-2 concepts twice
