@@ -29,12 +29,24 @@ angular.module('app').controller('MainCtrl', function ($scope){
     {display: "Energy Cost", col: "cost"},
     {display: "Attack", col: "damage"},
     {display: "Defense", col: "defense"},
+    {display: "Heal", col: "heal"},
     {display: "Hits", col: "hits"},
     {display: "Targets", col: "target"},
     {display: "Effects", col: "effect"}
   ];
+  for(var i in s.headers) {
+    s.headers[i].show = true;
+    s.headers[i].order = i;
+  }
 
+  s.data = [];
+  s.loadComplete = false;
+  s.showColumnSelect = false;
   s.search = [];
+
+  s.toggleColumn = function(header) {
+    header.show = !header.show;
+  };
 
   //define a function to proxy out HTTP requests
   function doCORSRequest(options, fcn) {
@@ -48,11 +60,9 @@ angular.module('app').controller('MainCtrl', function ($scope){
     }
     x.send(options.data);
   }
-  s.data = [];
-  s.loadComplete = false;
 
-  //unnecessary??
-  if(!(s.message))
+
+  if(!(s.message)) //unnecessary check??
     s.message = "Loading."
 
   //acquire data from ETO
@@ -61,35 +71,42 @@ angular.module('app').controller('MainCtrl', function ($scope){
       url: 'https://scene.eldertaleonline.com/api/cards.json',
       data: ''
     }, function(result) {
-      s.data = result.responseText;
-      s.data = JSON.parse(s.data);
-      s.loadComplete = true;
-      parseData(s.data);
-      console.log("Success");
-      console.log(s.data);
-  });
+      try {
+        s.data = result.responseText;
+        s.data = JSON.parse(s.data);
+        s.loadComplete = true;
+        parseData(s.data);
+        console.log("Success");
+        console.log(s.data); 
+      } catch(err) {
+        console.log("Failure");
+        console.log(err.message);
+      }
+    }
+  );
 
-  //collapse data for easier display
+  //collapse data structure for easier display
   function parseData(data) {
       for(var i in data) {
         data[i].type = data[i].Data.type;
         data[i].require = concatenateConcepts(data[i].Data.conceptrequirement);
         data[i].grant = concatenateConcepts(data[i].Data.concept);
         data[i].target = data[i].Data.targets ? data[i].Data.targets.join(', ') : '';
-        data[i].rarity = data[i].Data.rarity;
-        data[i].cost = data[i].Data.cost;
-        data[i].damage = data[i].Data.damage;
-        data[i].defense = data[i].Data.defense;
-        data[i].hits = data[i].Data.hits;
+        data[i].rarity = data[i].Data.rarity || '';
+        data[i].cost = data[i].Data.cost || '';
+        data[i].damage = data[i].Data.damage || '';
+        data[i].defense = data[i].Data.defense || '';
+        data[i].hits = data[i].Data.hits || '';
+        data[i].heal = data[i].Data.heal || '';
         data[i].effect = parseEffects(data[i].Data.effects);
     }
   }
 
-  //known attributes in Data.effects
+  //known attributes in Data.effects, used to recognize new ones
   var effectAttributes = [
     "trigger", "name", "deck", "card", "intensity",
     "type", "hitduration", "roundduration"
-  ]
+  ];
 
   //format: each effect in square brackets, comma-dilineated
   // [$trigger: ][$name][ $deck][ $card][ $intensity][ $type][ for ][ $hitduration hit(s)][ / ][ $roundduration rd(s)]
@@ -164,10 +181,10 @@ angular.module('app').controller('MainCtrl', function ($scope){
       s.sortBy = col;
     else
       s.sortBy = '-' + s.sortBy;
-  }
+  };
 
   //parse search terms and filter on the given item
-  s.filterBy = function(item) {
+  s.filterBySearch = function(item) {
     for(var i in s.search) {
       if(!s.search[i])
         continue;
@@ -191,7 +208,7 @@ angular.module('app').controller('MainCtrl', function ($scope){
           return false;
       } else { //contains
         search = search.toLowerCase();
-        val = val.toLowerCase();
+        val = ('' + val).toLowerCase();
         var found = val.indexOf(search) >= 0;
         if(not) //does not contain
           found = !found;
@@ -201,6 +218,10 @@ angular.module('app').controller('MainCtrl', function ($scope){
     }
     return true;
   };
+
+  s.getShow = function(item) {
+    return item.show;
+  }
 });
 
 
