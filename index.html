@@ -19,7 +19,7 @@
     border-top: 1px solid black;
     border-left: 1px solid black;
     border-collapse: collapse;
-    margin: auto;
+    //margin: auto;
     padding: 2px;
     height: 20px
   }
@@ -49,16 +49,20 @@
         <span ng-show="showSearch">All searches are partial matches and case-insensitive. To do an exact match, instead, start with an equals sign. To invert a search, start with an exclamation point. To filter out empty values, use an exclamation point on its own.</span>
       </div>
       <div ng-show="showColumnSelect">
-        <section ng-repeat="h in headers" class="container">
+        <section ng-repeat="h in headers | orderBy: 'order'" class="container">
           <div class="leftHalf">{{h.display}}</div>
-          <div class="rightHalf"><span ng-click="toggleColumn(h)">{{h.show ? ' Hide ' : ' Show '}}</span><span> Up </span><span> Down </span></div>
+          <div class="rightHalf">
+            <span ng-click="toggleColumn(h)">{{h.show ? ' Hide ' : ' Show '}}</span>
+            <span ng-click="reorderColumn(h, 'up')"> Up </span>
+            <span ng-click="reorderColumn(h, 'down')"> Down </span>
+          </div>
         </section>
       </div>
       <table>
         <tr ng-show="showSearch">
-          <td ng-repeat="h in headers | filter: getShow track by $index">
-            <input ng-if="!h.dropdown" class="searchBox" type="text" ng-model="search[$index]">
-            <select ng-if="h.dropdown" ng-model="search[$index]">
+          <td ng-repeat="h in headers | filter: getShow | orderBy: 'order'">
+            <input ng-if="!h.dropdown" class="searchBox" type="text" ng-model="search[h.col]">
+            <select ng-if="h.dropdown" ng-model="search[h.col]">
               <option ng-repeat="d in h.dropdown" value="{{d.val}}">
                 {{d.display}}
               </option>
@@ -66,10 +70,10 @@
           </td>
         </tr>
         <tr>
-          <th ng-repeat="h in headers | filter: getShow" ng-click="sort(h.col)">{{h.display}}</th>
+          <th ng-repeat="h in headers | filter: getShow | orderBy: 'order'" ng-click="sort(h.col)">{{h.display}}</th>
         </tr>
         <tr ng-repeat="d in data | filter: filterBySearch | orderBy: sortBy">
-          <td ng-repeat="h in headers | filter: getShow">{{d[h.col]}}</td>
+          <td ng-repeat="h in headers | filter: getShow | orderBy: 'order'">{{d[h.col]}}</td>
         </tr>
       </table>
     </div>

@@ -36,7 +36,7 @@ angular.module('app').controller('MainCtrl', function ($scope){
   ];
   for(var i in s.headers) {
     s.headers[i].show = true;
-    s.headers[i].order = i;
+    s.headers[i].order = parseInt(i);
   }
 
   s.data = [];
@@ -46,6 +46,49 @@ angular.module('app').controller('MainCtrl', function ($scope){
 
   s.toggleColumn = function(header) {
     header.show = !header.show;
+  };
+
+  s.reorderColumn = function(header, direction) {
+    if(direction == 'up') {
+      if(header.order == 0)
+        return; //already at top
+      var otherHeader = getHeaderWithOrder(header.order - 1);
+      if(otherHeader)
+        swapOrder(header, otherHeader);
+    } else { //down
+      if(header.order == s.headers.length - 1)
+        return; //already at bottom
+      var otherHeader = getHeaderWithOrder(header.order + 1);
+      if(otherHeader)
+        swapOrder(header, otherHeader);
+    }
+    //console.log(s.headers);
+  };
+
+  function getHeaderWithOrder(order) {
+    for(var i in s.headers) {
+      if(s.headers[i].order == order)
+        return s.headers[i];
+    }
+    return false;
+  }
+
+  function getHeaderWithCol(col) {
+    for(var i in s.headers) {
+      if(s.headers[i].col == col)
+        return s.headers[i];
+    }
+    return false;
+  }
+
+  function swapOrder(item1, item2) {
+    var temp = item2.order;
+    item2.order = item1.order;
+    item1.order = temp;
+  }
+
+  s.getOrder = function(item) {
+    return item.order;
   };
 
   //define a function to proxy out HTTP requests
@@ -185,12 +228,12 @@ angular.module('app').controller('MainCtrl', function ($scope){
 
   //parse search terms and filter on the given item
   s.filterBySearch = function(item) {
-    for(var i in s.search) {
-      if(!s.search[i])
+    for(var col in s.search) {
+      if(!s.search[col])
         continue;
       var exact = false;
       var not = false;
-      var search = s.search[i];
+      var search = s.search[col];
       if(search[0] == '=') {
         search = search.substr(1);
         exact = true;
@@ -198,7 +241,6 @@ angular.module('app').controller('MainCtrl', function ($scope){
         search = search.substr(1);
         not = true;
       }
-      var col = s.headers[i].col;
       var val = item[col] || '';
       if(exact) { //exact
         if(val != search)
