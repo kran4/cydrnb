@@ -32,6 +32,11 @@
     margin-left: 15%;
     float: right;
   }
+
+  .monospace {
+    font-family: "Lucida Console", Courier, monospace;
+    background: gray;
+  }
 </style>
 <div id="app">
   <div ng-controller="MainCtrl">
@@ -46,7 +51,11 @@
       <div ng-show="showHelp">
         <span>To sort on a column, click a header. To reverse sort, click it again.</span>
         <br>
-        <span ng-show="showSearch">All searches are partial matches and case-insensitive. To do an exact match, instead, start with an equals sign. To invert a search, start with an exclamation point. To filter out empty values, use an exclamation point on its own.</span>
+        <span ng-show="showSearch">All searches are partial matches and case-insensitive.
+          <list><li><span class="monospace">phrase && phrase</span> Separate search phrases on the same column with double-ampersand.</li>
+          <li><span class="monospace">=words</span> To do an exact match, start with an equals sign.</li>
+          <li><span class="monospace">!words</span> To invert a search, start with an exclamation point.</li>
+          <li><span class="monospace">!</span> To filter out empty values, use an exclamation point on its own.</li></list></span>
       </div>
       <div ng-show="showColumnSelect">
         <section ng-repeat="h in headers | orderBy: 'order'" class="container">

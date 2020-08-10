@@ -231,31 +231,34 @@ angular.module('app').controller('MainCtrl', function ($scope){
     for(var col in s.search) {
       if(!s.search[col])
         continue;
-      var exact = false;
-      var not = false;
-      var search = s.search[col];
-      if(search[0] == '=') {
-        search = search.substr(1);
-        exact = true;
-      } else if(search[0] == '!') {
-        search = search.substr(1);
-        not = true;
-      }
-      var val = item[col] || '';
-      if(exact) { //exact
-        if(val != search)
-          return false;
-      } else if(not && search == '') { //not empty
-        if(val == '')
-          return false;
-      } else { //contains
-        search = search.toLowerCase();
-        val = ('' + val).toLowerCase();
-        var found = val.indexOf(search) >= 0;
-        if(not) //does not contain
-          found = !found;
-        if(!found)
-          return false;
+      var phrase = s.search[col].split("&&");
+      for(var i in phrase) {
+        var search = phrase[i].trim();
+        var exact = false;
+        var not = false;
+        if(search[0] == '=') {
+          search = search.substr(1);
+          exact = true;
+        } else if(search[0] == '!') {
+          search = search.substr(1);
+          not = true;
+        }
+        var val = item[col] || '';
+        if(exact) { //exact
+          if(val != search)
+            return false;
+        } else if(not && search == '') { //not empty
+          if(val == '')
+            return false;
+        } else { //contains
+          search = search.toLowerCase();
+          val = ('' + val).toLowerCase();
+          var found = val.indexOf(search) >= 0;
+          if(not) //does not contain
+            found = !found;
+          if(!found)
+            return false;
+        }
       }
     }
     return true;
