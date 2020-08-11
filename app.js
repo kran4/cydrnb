@@ -65,6 +65,7 @@ angular.module('app').controller('MainCtrl', function ($scope){
     //console.log(s.headers);
   };
 
+  // returns the header object with the given order, or false if not found
   function getHeaderWithOrder(order) {
     for(var i in s.headers) {
       if(s.headers[i].order == order)
@@ -73,6 +74,7 @@ angular.module('app').controller('MainCtrl', function ($scope){
     return false;
   }
 
+  //returns the header object for the given column, or false if not found
   function getHeaderWithCol(col) {
     for(var i in s.headers) {
       if(s.headers[i].col == col)
@@ -81,6 +83,7 @@ angular.module('app').controller('MainCtrl', function ($scope){
     return false;
   }
 
+  // swaps the ordering of two columns
   function swapOrder(item1, item2) {
     var temp = item2.order;
     item2.order = item1.order;
