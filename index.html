@@ -35,7 +35,7 @@
 
   .monospace {
     font-family: "Lucida Console", Courier, monospace;
-    background: gray;
+    background: #eeeeee;
   }
 </style>
 <div id="app">
@@ -52,10 +52,13 @@
         <span>To sort on a column, click a header. To reverse sort, click it again.</span>
         <br>
         <span ng-show="showSearch">All searches are partial matches and case-insensitive.
-          <list><li><span class="monospace">phrase && phrase</span> Separate search phrases on the same column with double-ampersand.</li>
-          <li><span class="monospace">=words</span> To do an exact match, start with an equals sign.</li>
-          <li><span class="monospace">!words</span> To invert a search, start with an exclamation point.</li>
-          <li><span class="monospace">!</span> To filter out empty values, use an exclamation point on its own.</li></list></span>
+          <list>
+            <li><span class="monospace">phrase && phrase</span> Separate search phrases on the same column with double-ampersand.</li>
+            <li><span class="monospace">=words</span> To do an exact match, start with an equals sign.</li>
+            <li><span class="monospace">!words</span> To invert a search, start with an exclamation point.</li>
+            <li><span class="monospace">!</span> To filter out empty values, use an exclamation point on its own.</li>
+            <li><span class="monospace">! && 1 && !=1 </span> An example that would show <span class="monospace">10</span> through <span class="monospace">19</span>, but not <span class="monospace">1</span> or empty.</li>  
+          </list></span>
       </div>
       <div ng-show="showColumnSelect">
         <section ng-repeat="h in headers | orderBy: 'order'" class="container">

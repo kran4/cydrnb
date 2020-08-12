@@ -239,16 +239,20 @@ angular.module('app').controller('MainCtrl', function ($scope){
         var search = phrase[i].trim();
         var exact = false;
         var not = false;
-        if(search[0] == '=') {
-          search = search.substr(1);
-          exact = true;
-        } else if(search[0] == '!') {
+        if(search[0] == '!') {
           search = search.substr(1);
           not = true;
         }
+        if(search[0] == '=') {
+          search = search.substr(1);
+          exact = true;
+        }
         var val = item[col] || '';
         if(exact) { //exact
-          if(val != search)
+          var match = val == search;
+          if(not)
+            match = !match;
+          if(!match)
             return false;
         } else if(not && search == '') { //not empty
           if(val == '')
